@@ -1,5 +1,5 @@
 -- This Version
--- 2.13 10/11/2014
+-- 3.04 - 02/05/2020
 -- ChangeLogs
 -- 2.04 - Adding Left or Right Support
 -- 2.05 - Changing Lot Code For Some Stable And Cleaner Code
@@ -12,6 +12,13 @@
 -- 2.11 - Change: Right to left and Left to Right better understand
 -- 2.12 - Add Stop Code when item are gone
 -- 2.13 - i made big mistake i forget to end to new stop code
+
+-- 3.00 - Add EnderChest ability
+-- 3.01 - Add ability to suck up torches from first row in EnderChest
+-- 3.02 - More degug output and better wording of help messages.
+-- 3.03 - Don't stop mining after using 64 torches dummy!
+-- 3.04 - Drop Cobble instead of putting in chest, Get torches from enderchest in slot 5 instead of from item deposit chest.
+
 -- ToDoList
 -- Add Code to place torch each time it starts
 -- Add Fuel Code so can know almost how much fuel you need
@@ -34,28 +41,31 @@ local Way = 0 -- 0 = Left and 1 = Right
 --Checking
 local function Check()
 	if torch == 0 then
-		print("There are no torch's in Turtle")
+		print("There are no torches in Turtle")
 		Error = 1
 	else
-		print("There are torch's in turtle")
+		print("Torches are present.")
 	end
 	if chest == 0 then
-		print("there are no chests")
+		print("There are no chests")
 		Error = 1
 	else
-		print("There are chest in turtle")
+		print("Chest is present.")
 	end
 	if ItemFuel == 0 then
-		print("No Fuel Items")
+		print("No Fuel. Place Coal in slot 3")
 		Error = 1
 	else
-		print("there is fuel")
+		print("Fuel is present.")
 	end
 	repeat
 		if turtle.getFuelLevel() == "unlimited" then 
 			print("NO NEED FOR FUEL")
 			Needfuel = 0
-		elseif turtle.getFuelLevel() < 100 then
+        elseif turtle.getFuelLevel() < 100 then
+            CurrentFuelLevel = turtle.getFuelLevel()
+            print("Refuelling. Fuel level is:")
+            print(CurrentFuelLevel)
 			turtle.select(3)
 			turtle.refuel(1)
 			Needfuel = 1
@@ -97,28 +107,49 @@ local function ForwardM()
 				turtle.place()
 				turtle.turnLeft()
 				turtle.turnLeft()
-				torch = torch - 1
 				onlight = onlight - 8
 			else
-				print("turtle run out of torchs")
-				os.shutdown()
+				error("Ran out of torches. Quitting")
 			end
 		end
 		if turtle.getItemCount(16)>0 then -- If slot 16 in turtle has item slot 5 to 16 will go to chest
 			if chest > 0 then
 				turtle.select(2)
-				turtle.digDown()
+                turtle.digDown()
+                print("Placing down chest and dropping items")
 				turtle.placeDown()
-				chest = chest - 1
-				for slot = 5, 16 do
-					turtle.select(slot)
-					turtle.dropDown()
-					sleep(1.5)
-				end
-				turtle.select(5)
+				for slot = 6, 16 do
+                    turtle.select(slot)
+                    ItemDetails = turtle.getItemDetail()
+                        if ItemDetails.name == "minecraft:cobblestone" then 
+                            turtle.drop() -- If the slot contains cobble, drop it on the ground.
+                        else
+					        turtle.dropDown() -- Drop all non-cobblestone items into the chest below me.
+                            sleep(1.5)
+                    end
+                end
+                turtle.select(2)  -- Reselect the empty slot to put the EnderChest back into.
+                turtle.digDown() -- Dig the EnderChest back up.
+                sleep(2)
+                print("Collecting torches")
+                RemainingTorches = 0
+                TorchesNeeded = 0
+                turtle.select(5) -- Select slot 5, this should contain the crate or EnderChest full of only torches.
+                turtle.placeDown()
+                turtle.select(1) -- Select slot for torches...
+                RemainingTorches = turtle.getItemCount(1) -- And count them
+                TorchesNeeded = 64 - RemainingTorches
+                turtle.suckDown(TorchesNeeded) -- Pull only enough torches to refill slot 1.
+                print("Done. Collected this many torches:")
+                print(TorchesNeeded)
+                print("Collect EnderChest and continue.")
+                turtle.select(5) -- Select empty slot for Torch storage EnderChest
+                turtle.digDown()  -- And pick the Torch Storage EnderChest back up again.
+                turtle.select(4)
+                turtle.placeDown()
+				turtle.select(6)
 			else
-				print("turtle run out of chest")
-				os.shutdown()
+				error("turtle run out of Chests. Quitting")
 			end
 		end
 		repeat
@@ -127,9 +158,8 @@ local function ForwardM()
 				Needfuel = 0
 			elseif turtle.getFuelLevel() < 100 then
 				turtle.select(3)
-				turtle.refuel(1)
+				turtle.refuel(3)
 				Needfuel = 1
-				ItemFuel = ItemFuel - 1
 			elseif ItemFuel == 0 then
 				print("turtle run out of fuel")
 				os.shutdown()
@@ -214,18 +244,23 @@ end
 
 -- Start
 print("Hi There Welcome to Mining Turtle Program")
-print("How Far Will Turtle Go")
+print("How long should each shaft be?")
 input = io.read()
 distance = tonumber(input)
 TF = distance
 TB = distance
-print("Left or Right")
+print("Go left or right?")
 print("0 = Left and 1 = Right")
 input2 = io.read()
 Way = tonumber(input2)
-print("How Many Times")
+print("How many shafts to dig?")
 input3 = io.read()
 MineTimes = tonumber(input3)
+print("Digging")
+print(input3)
+print("Shafts, each will be")
+print(input)
+print("long.")
 Check()
 if Error == 1 then 
 	repeat
