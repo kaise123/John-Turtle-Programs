@@ -284,7 +284,7 @@ local function MultiMines()
 		turtle.place()
 		turtle.select(3)
 		turtle.turnLeft()
-		turtle.turlLeft()
+		turtle.turnLeft()
 		turtle.down()
 	else
 		turtle.turnLeft()
