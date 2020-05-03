@@ -193,9 +193,16 @@ local function Back()
 		if turtle.forward() then -- sometimes sand and gravel and block and mix-up distance
 			TB = TB - 1
 			RemainingCobble = turtle.getItemCount(4)
-			if (turtle.detectUp() == false and RemainingCobble > 1 == true) then
+			if RemainingCobble > 3 == true then
 				turtle.select(4)
 				turtle.placeUp()
+				turtle.turnLeft()
+				turtle.place()
+				turtle.turnRight()
+				turtle.turnRight()
+				turtle.place()
+				turtle.turnLeft()
+				turtle.select(3)
 			else
 			end
 		end
