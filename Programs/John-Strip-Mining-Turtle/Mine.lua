@@ -40,6 +40,8 @@ local Fuel = 0 -- if 2 then it is unlimited no fuel needed
 local NeedFuel = 0 -- If Fuel Need Then 1 if not Then 0
 local Error = 0 -- 0 = No Error and 1 = Error
 local Way = 0 -- 0 = Left and 1 = Right
+local OresFoundTotal = 0 -- Pre-Define that no ores have been found yet.
+-- Define blocks that we want to dig out of the walls, floor and ceiling:
 local OreBlocks = {
     ["minecraft:coal_ore"] = true,
     ["minecraft:diamond_ore"] = true,
@@ -102,7 +104,8 @@ end
 local function DetectOresFront()
     local IsBlock,BlockInfo = turtle.inspect()
     if IsBlock and OreBlocks[BlockInfo.name] then
-        print("Found an ore infront of me! Collecting...")
+		OresFoundTotal = OresFoundTotal + 1
+		print("Found ", OresFoundTotal, "ores so far")
         turtle.select(3)
         turtle.dig()
     elseif IsBlock then
@@ -117,7 +120,8 @@ end
 local function DetectOresDown()
     local IsBlock,BlockInfo = turtle.inspectDown()
     if IsBlock and OreBlocks[BlockInfo.name] then
-        print("Found an ore below me! Collecting...")
+		OresFoundTotal = OresFoundTotal + 1
+		print("Found ", OresFoundTotal, "ores so far")
         turtle.select(3)
         turtle.digDown()
     elseif IsBlock then
@@ -132,7 +136,8 @@ end
 local function DetectOresUp()
     local IsBlock,BlockInfo = turtle.inspectUp()
     if IsBlock and OreBlocks[BlockInfo.name] then
-        print("Found an ore above me! Collecting...")
+		OresFoundTotal = OresFoundTotal + 1
+		print("Found ", OresFoundTotal, "ores so far")
         turtle.select(3)
         turtle.digUp()
     elseif IsBlock then
@@ -174,11 +179,12 @@ local function ForwardM()
 				turtle.turnLeft()
 				turtle.turnLeft()
 				onlight = onlight - 10
+				turtle.select(3)
 			else
 				error("Ran out of torches. Quitting")
 			end
 		end
-		if turtle.getItemCount(16)>0 then -- If slot 16 in turtle has item slot 6 to 16 will go to chest
+		if turtle.getItemCount(16)>0 then -- If slot 16 contains an item, the turtle is full. Drop slots 6 to 16 into chest.
 			if chest > 0 then
 				turtle.select(2)
                 turtle.digDown()
@@ -237,7 +243,7 @@ local function ForwardM()
 end
 
 --Warm Up For Back Program
-local function WarmUpForBackProgram() -- To make turn around so it can go back
+local function WarmUpForBackProgram() -- Turns the turtle around to return to beginning of shaft.
 	turtle.turnLeft()
 	turtle.turnLeft()
 	turtle.up()
@@ -343,11 +349,8 @@ Way = tonumber(input2)
 print("How many shafts to dig?")
 input3 = io.read()
 MineTimes = tonumber(input3)
-print("Digging", input3)
-print(input3)
-print("Shafts, each will be", input, "long")
-print(input)
-print("long.")
+print("Digging ", input3, " shafts")
+print("Each will be ", input, " long")
 Check()
 if Error == 1 then 
 	repeat
