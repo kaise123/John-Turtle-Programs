@@ -1,5 +1,5 @@
 -- This Version
--- 3.04 - 02/05/2020
+-- 3.05 - 03/05/2020
 -- ChangeLogs
 -- 2.04 - Adding Left or Right Support
 -- 2.05 - Changing Lot Code For Some Stable And Cleaner Code
@@ -18,6 +18,7 @@
 -- 3.02 - More degug output and better wording of help messages.
 -- 3.03 - Don't stop mining after using 64 torches dummy!
 -- 3.04 - Drop Cobble instead of putting in chest, Get torches from enderchest in slot 5 instead of from item deposit chest.
+-- 3.05 - Adjustments to fuelling system - Use all Coal in slot 3 but one to optimise coal that will be collected.
 
 -- ToDoList
 -- Add Code to place torch each time it starts
@@ -62,14 +63,15 @@ local function Check()
 		if turtle.getFuelLevel() == "unlimited" then 
 			print("NO NEED FOR FUEL")
 			Needfuel = 0
-        elseif turtle.getFuelLevel() < 100 then
+        elseif turtle.getFuelLevel() < 200 then
             CurrentFuelLevel = turtle.getFuelLevel()
             print("Refuelling. Fuel level is:")
             print(CurrentFuelLevel)
-			turtle.select(3)
-			turtle.refuel(1)
+            turtle.select(3)
+            CoalRemaining = turtle.getItemCount(3) -- Count remaining Coal in slot 3
+            CoalToUse = CoalRemaining - 1 -- Take one away - We want to leave one coal in slot 3 so future Coal we mine is collected here first.
+			turtle.refuel(CoalToUse) -- Refuel with all the coal in the slot minus one.
 			Needfuel = 1
-			ItemFuel = ItemFuel - 1
 		elseif NeedFuel == 1 then
 			Needfuel = 0
 		end
