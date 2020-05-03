@@ -278,9 +278,21 @@ end
 -- Multimines Program
 local function MultiMines()
 	if Way == 1 then
+		turtle.turnRight()
+		turtle.dig()
+		turtle.select(1)
+		turtle.place()
+		turtle.select(3)
 		turtle.turnLeft()
+		turtle.turlLeft()
 		turtle.down()
 	else
+		turtle.turnLeft()
+		turtle.dig()
+		turtle.select(1)
+		turtle.place()
+		turtle.select(3)
+		turtle.turnRight()
 		turtle.turnRight()
 		turtle.down()
 	end
@@ -297,16 +309,7 @@ local function MultiMines()
 	until MD == 0
 	if Way == 1 then
 		turtle.turnLeft()
-		turtle.select(1)
-		turtle.up()
-		turtle.digUp()
-		turtle.placeUp()
-		turtle.down()
-		turtle.select(3)
 	else
-		turtle.select(1)
-		turtle.placeUp()
-		turtle.select(3)
 		turtle.turnRight()
 	end
 	if MineTimes == 0 then
