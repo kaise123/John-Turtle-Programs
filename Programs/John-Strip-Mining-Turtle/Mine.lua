@@ -235,10 +235,13 @@ local function MultiMines()
 		end
 	until MD == 0
 	if Way == 1 then
-		turtle.select(1)
-		turtle.placeUp()
-		turtle.select(3)
 		turtle.turnLeft()
+		turtle.select(1)
+		turtle.up()
+		turtle.digUp()
+		turtle.placeUp()
+		turtle.down()
+		turtle.select(3)
 	else
 		turtle.select(1)
 		turtle.placeUp()
