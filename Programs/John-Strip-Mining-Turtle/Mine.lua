@@ -102,6 +102,12 @@ local function ForwardM()
 		end
 		turtle.select(4)
 		turtle.placeDown()
+		turtle.turnLeft()
+		turtle.place()
+		turtle.turnRight()
+		turtle.turnRight()
+		turtle.place()
+		turtle.turnLeft()
 		turtle.select(3)
 		if onlight == 10 then -- Every 10 Block turtle place torch
 			if torch > 0 then
