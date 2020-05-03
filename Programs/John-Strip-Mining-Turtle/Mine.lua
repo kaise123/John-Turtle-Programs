@@ -102,7 +102,8 @@ local function ForwardM()
 		end
 		turtle.select(4)
 		turtle.placeDown()
-		if onlight == 8 then -- Every 10 Block turtle place torch
+		turtle.select(3)
+		if onlight == 10 then -- Every 10 Block turtle place torch
 			if torch > 0 then
 				turtle.turnLeft()
 				turtle.turnLeft()
@@ -110,7 +111,7 @@ local function ForwardM()
 				turtle.place()
 				turtle.turnLeft()
 				turtle.turnLeft()
-				onlight = onlight - 8
+				onlight = onlight - 10
 			else
 				error("Ran out of torches. Quitting")
 			end
@@ -150,7 +151,7 @@ local function ForwardM()
                 turtle.digDown()  -- And pick the Torch Storage EnderChest back up again.
                 turtle.select(4)
                 turtle.placeDown()
-				turtle.select(6)
+				turtle.select(3)
 			else
 				error("turtle run out of Chests. Quitting")
 			end
