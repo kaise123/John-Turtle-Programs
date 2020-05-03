@@ -1,5 +1,5 @@
 -- This Version
--- 3.05 - 03/05/2020
+-- 3.06 - 03/05/2020
 -- ChangeLogs
 -- 2.04 - Adding Left or Right Support
 -- 2.05 - Changing Lot Code For Some Stable And Cleaner Code
@@ -19,6 +19,7 @@
 -- 3.03 - Don't stop mining after using 64 torches dummy!
 -- 3.04 - Drop Cobble instead of putting in chest, Get torches from enderchest in slot 5 instead of from item deposit chest.
 -- 3.05 - Adjustments to fuelling system - Use all Coal in slot 3 but one to optimise coal that will be collected.
+-- 3.06 - Place items abobe if there is no block there to build ceiling
 
 -- ToDoList
 -- Add Code to place torch each time it starts
@@ -114,7 +115,7 @@ local function ForwardM()
 				error("Ran out of torches. Quitting")
 			end
 		end
-		if turtle.getItemCount(16)>0 then -- If slot 16 in turtle has item slot 5 to 16 will go to chest
+		if turtle.getItemCount(16)>0 then -- If slot 16 in turtle has item slot 6 to 16 will go to chest
 			if chest > 0 then
 				turtle.select(2)
                 turtle.digDown()
@@ -184,6 +185,12 @@ local function Back()
 	repeat
 		if turtle.forward() then -- sometimes sand and gravel and block and mix-up distance
 			TB = TB - 1
+			RemainingCobble = turtle.getItemCount(4)
+			if (turtle.detectUp() == false and RemainingCobble > 1 == true) then
+				turtle.select(4)
+				turtle.placeUp()
+			else
+			end
 		end
 		if turtle.detect() then -- Sometimes sand and gravel can happen and this will fix it
 			if TB ~= 0 then
@@ -236,16 +243,16 @@ end
 -- Starting 
 function Start()
 	repeat
-		ForwardM()
-		WarmUpForBackProgram()
-		Back()
-		MultiMines()
-		Restart()
+		ForwardM() -- Go forward until TF is 0
+		WarmUpForBackProgram() -- Turn around and go up 1 block
+		Back() -- Go back the distance of the shaft defined by the user
+		MultiMines() -- Move forward and start next mine
+		Restart() -- Start the process again for the next strip.
 	until MineTimes == 0
 end
 
 -- Start
-print("Hi There Welcome to Mining Turtle Program")
+print("Program Start.")
 print("How long should each shaft be?")
 input = io.read()
 distance = tonumber(input)
