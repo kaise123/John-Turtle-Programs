@@ -43,7 +43,10 @@ local Way = 0 -- 0 = Left and 1 = Right
 local OreBlocks = {
     ["minecraft:coal_ore"] = true,
     ["minecraft:diamond_ore"] = true,
-    ["minecraft:dirt"] = true,
+	["minecraft:gold_ore"] = true,
+	["minecraft:iron_ore"] = true,
+	["minecraft:lapis_ore"] = true,
+	["thermalfoundation:ore"] = true,
 }
 
 --Checking
