@@ -1,5 +1,5 @@
 -- This Version
--- 3.06 - 03/05/2020
+-- 3.10 - 03/05/2020
 -- ChangeLogs
 -- 2.04 - Adding Left or Right Support
 -- 2.05 - Changing Lot Code For Some Stable And Cleaner Code
@@ -20,6 +20,7 @@
 -- 3.04 - Drop Cobble instead of putting in chest, Get torches from enderchest in slot 5 instead of from item deposit chest.
 -- 3.05 - Adjustments to fuelling system - Use all Coal in slot 3 but one to optimise coal that will be collected.
 -- 3.06 - Place items abobe if there is no block there to build ceiling
+-- 3.10 - Major changes to dig up detected ores that are directly next to the turtle. Many other changes/bugfixes.
 
 -- ToDoList
 -- Add Code to place torch each time it starts
@@ -39,6 +40,11 @@ local Fuel = 0 -- if 2 then it is unlimited no fuel needed
 local NeedFuel = 0 -- If Fuel Need Then 1 if not Then 0
 local Error = 0 -- 0 = No Error and 1 = Error
 local Way = 0 -- 0 = Left and 1 = Right
+local OreBlocks = {
+    ["minecraft:coal_ore"] = true,
+    ["minecraft:diamond_ore"] = true,
+    ["minecraft:dirt"] = true,
+}
 
 --Checking
 local function Check()
@@ -66,7 +72,7 @@ local function Check()
 			Needfuel = 0
         elseif turtle.getFuelLevel() < 200 then
             CurrentFuelLevel = turtle.getFuelLevel()
-            print("Refuelling. Fuel level is:")
+            print("Refuelling. Fuel level was:", CurrentFuelLevel)
             print(CurrentFuelLevel)
             turtle.select(3)
             CoalRemaining = turtle.getItemCount(3) -- Count remaining Coal in slot 3
@@ -87,6 +93,54 @@ local function Recheck()
 	Error = 0
 end
 
+-- Ore Detection
+
+-- Detects if facing an ore present in the OreBlocks table.
+local function DetectOresFront()
+    local IsBlock,BlockInfo = turtle.inspect()
+    if IsBlock and OreBlocks[BlockInfo.name] then
+        print("Found an ore infront of me! Collecting...")
+        turtle.select(3)
+        turtle.dig()
+    elseif IsBlock then
+        --# there is a block and it is not in the table
+    else
+        turtle.select(4)
+        turtle.place()
+        turtle.select(3)
+    end
+end
+
+local function DetectOresDown()
+    local IsBlock,BlockInfo = turtle.inspectDown()
+    if IsBlock and OreBlocks[BlockInfo.name] then
+        print("Found an ore below me! Collecting...")
+        turtle.select(3)
+        turtle.digDown()
+    elseif IsBlock then
+        --# there is a block and it is not in the table
+    else
+        turtle.select(4)
+        turtle.placeDown()
+        turtle.select(3)
+    end
+end
+
+local function DetectOresUp()
+    local IsBlock,BlockInfo = turtle.inspectUp()
+    if IsBlock and OreBlocks[BlockInfo.name] then
+        print("Found an ore above me! Collecting...")
+        turtle.select(3)
+        turtle.digUp()
+    elseif IsBlock then
+        --# there is a block and it is not in the table
+    else
+        turtle.select(4)
+        turtle.placeUp()
+        turtle.select(3)
+    end
+end
+
 --Mining
 local function ForwardM()
 	repeat
@@ -100,13 +154,12 @@ local function ForwardM()
 		if turtle.detectUp() then
 			turtle.digUp()
 		end
-		turtle.select(4)
-		turtle.placeDown()
+		DetectOresDown()
 		turtle.turnLeft()
-		turtle.place()
+		DetectOresFront()
 		turtle.turnRight()
 		turtle.turnRight()
-		turtle.place()
+		DetectOresFront()
 		turtle.turnLeft()
 		turtle.select(3)
 		if onlight == 10 then -- Every 10 Block turtle place torch
@@ -194,13 +247,12 @@ local function Back()
 			TB = TB - 1
 			RemainingCobble = turtle.getItemCount(4)
 			if RemainingCobble > 3 == true then
-				turtle.select(4)
-				turtle.placeUp()
+				DetectOresUp()
 				turtle.turnLeft()
-				turtle.place()
+				DetectOresFront()
 				turtle.turnRight()
 				turtle.turnRight()
-				turtle.place()
+				DetectOresFront()
 				turtle.turnLeft()
 				turtle.select(3)
 			else
@@ -288,9 +340,9 @@ Way = tonumber(input2)
 print("How many shafts to dig?")
 input3 = io.read()
 MineTimes = tonumber(input3)
-print("Digging")
+print("Digging", input3)
 print(input3)
-print("Shafts, each will be")
+print("Shafts, each will be", input, "long")
 print(input)
 print("long.")
 Check()
