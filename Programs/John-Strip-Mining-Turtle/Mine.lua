@@ -21,6 +21,10 @@
 -- 3.05 - Adjustments to fuelling system - Use all Coal in slot 3 but one to optimise coal that will be collected.
 -- 3.06 - Place items abobe if there is no block there to build ceiling
 -- 3.10 - Major changes to dig up detected ores that are directly next to the turtle. Many other changes/bugfixes.
+-- 3.11 - Fix torch placement and blocking of main hall by the wall builder.
+
+-- Known Bugs:
+-- - If gravel is encountered on the main hallway (Between strips), the turtle may ascend for some reason and mine the next shaft one level higher.
 
 -- ToDoList
 -- Add Code to place torch each time it starts
@@ -43,8 +47,8 @@ local Way = 0 -- 0 = Left and 1 = Right
 local OresFoundTotal = 0 -- Pre-Define that no ores have been found yet.
 -- Define blocks that we want to dig out of the walls, floor and ceiling:
 local OreBlocks = {
-    ["minecraft:coal_ore"] = true,
-    ["minecraft:diamond_ore"] = true,
+	["minecraft:coal_ore"] = true,
+	["minecraft:diamond_ore"] = true,
 	["minecraft:gold_ore"] = true,
 	["minecraft:iron_ore"] = true,
 	["minecraft:lapis_ore"] = true,
