@@ -22,15 +22,14 @@
 -- 3.06 - Place items abobe if there is no block there to build ceiling
 -- 3.10 - Major changes to dig up detected ores that are directly next to the turtle. Many other changes/bugfixes.
 -- 3.11 - Fix torch placement and blocking of main hall by the wall builder.
+-- 3.12 - Fix floor and wall placement - Including placement in corridor. Improve console output messages.
 
 -- Known Bugs:
 -- - If gravel is encountered on the main hallway (Between strips), the turtle may ascend for some reason and mine the next shaft one level higher.
 
--- ToDoList
--- Add Code to place torch each time it starts
--- Add Fuel Code so can know almost how much fuel you need
--- Add second fuel slot if you go allout diggin
--- Mabye add code that make turtle make new line of tunnels
+-- ToDoList:
+-- - Store total ores found over lifetime out to file
+-- - Fill in walls in primary hallway also
 
 --Local
 local distance = 0 -- How Far Did User Pick
@@ -82,11 +81,12 @@ local function Check()
         elseif turtle.getFuelLevel() < 200 then
             CurrentFuelLevel = turtle.getFuelLevel()
             print("Refuelling. Fuel level was:", CurrentFuelLevel)
-            print(CurrentFuelLevel)
             turtle.select(3)
             CoalRemaining = turtle.getItemCount(3) -- Count remaining Coal in slot 3
             CoalToUse = CoalRemaining - 1 -- Take one away - We want to leave one coal in slot 3 so future Coal we mine is collected here first.
 			turtle.refuel(CoalToUse) -- Refuel with all the coal in the slot minus one.
+			CurrentFuelLevel = turtle.getFuelLevel()
+			print("Fuel level is now:", CurrentFuelLevel)
 			Needfuel = 1
 		elseif NeedFuel == 1 then
 			Needfuel = 0
@@ -102,6 +102,24 @@ local function Recheck()
 	Error = 0
 end
 
+local function FillCobble()
+	turtle.select(4)
+	turtle.place()
+	turtle.select(3)
+end
+
+local function FillCobbleUp()
+	turtle.select(4)
+	turtle.placeUp()
+	turtle.select(3)
+end
+
+local function FillCobbleDown()
+	turtle.select(4)
+	turtle.placeDown()
+	turtle.select(3)
+end
+
 -- Ore Detection
 
 -- Detects if facing an ore present in the OreBlocks table.
@@ -111,13 +129,13 @@ local function DetectOresFront()
 		OresFoundTotal = OresFoundTotal + 1
 		print("Found ", OresFoundTotal, "ores so far")
         turtle.select(3)
-        turtle.dig()
+		turtle.dig()
+		FillCobble()
     elseif IsBlock then
-        --# there is a block and it is not in the table
+		--# there is a block and it is not in the table. We will attempt to put cobble there anyway because we want to fill lava and water.
+		FillCobble()
     else
-        turtle.select(4)
-        turtle.place()
-        turtle.select(3)
+        FillCobble()
     end
 end
 
@@ -127,13 +145,13 @@ local function DetectOresDown()
 		OresFoundTotal = OresFoundTotal + 1
 		print("Found ", OresFoundTotal, "ores so far")
         turtle.select(3)
-        turtle.digDown()
+		turtle.digDown()
+		FillCobbleDown()
     elseif IsBlock then
-        --# there is a block and it is not in the table
+		--# there is a block and it is not in the table
+		FillCobbleDown()
     else
-        turtle.select(4)
-        turtle.placeDown()
-        turtle.select(3)
+        FillCobbleDown()
     end
 end
 
@@ -143,13 +161,13 @@ local function DetectOresUp()
 		OresFoundTotal = OresFoundTotal + 1
 		print("Found ", OresFoundTotal, "ores so far")
         turtle.select(3)
-        turtle.digUp()
+		turtle.digUp()
+		FillCobbleUp()
     elseif IsBlock then
-        --# there is a block and it is not in the table
+		--# there is a block and it is not in the table
+		FillCobbleUp()
     else
-        turtle.select(4)
-        turtle.placeUp()
-        turtle.select(3)
+        FillCobbleUp()
     end
 end
 
@@ -174,7 +192,7 @@ local function ForwardM()
 		DetectOresFront()
 		turtle.turnLeft()
 		turtle.select(3)
-		if onlight == 10 then -- Every 10 Block turtle place torch
+		if onlight == 15 then -- Every 15 Block turtle place torch
 			if torch > 0 then
 				turtle.turnLeft()
 				turtle.turnLeft()
@@ -182,7 +200,7 @@ local function ForwardM()
 				turtle.place()
 				turtle.turnLeft()
 				turtle.turnLeft()
-				onlight = onlight - 10
+				onlight = onlight - 15
 				turtle.select(3)
 			else
 				error("Ran out of torches. Quitting")
@@ -232,13 +250,18 @@ local function ForwardM()
 			if turtle.getFuelLevel() == "unlimited" then 
 				print("NO NEED FOR FUEL")
 				Needfuel = 0
-			elseif turtle.getFuelLevel() < 100 then
+			elseif turtle.getFuelLevel() < 200 then
+				CurrentFuelLevel = turtle.getFuelLevel()
+				print("Refuelling. Fuel level was:", CurrentFuelLevel)
 				turtle.select(3)
-				turtle.refuel(3)
+				CoalRemaining = turtle.getItemCount(3) -- Count remaining Coal in slot 3
+				CoalToUse = CoalRemaining - 1 -- Take one away - We want to leave one coal in slot 3 so future Coal we mine is collected here first.
+				turtle.refuel(CoalToUse) -- Refuel with all the coal in the slot minus one.
+				CurrentFuelLevel = turtle.getFuelLevel()
+				print("Fuel level is now:", CurrentFuelLevel)
 				Needfuel = 1
-			elseif ItemFuel == 0 then
+				elseif ItemFuel == 0 then
 				print("turtle run out of fuel")
-				os.shutdown()
 			elseif NeedFuel == 1 then
 				Needfuel = 0
 			end
@@ -289,7 +312,6 @@ local function MultiMines()
 		turtle.select(3)
 		turtle.turnLeft()
 		turtle.turnLeft()
-		turtle.down()
 	else
 		turtle.turnLeft()
 		turtle.dig()
@@ -298,23 +320,43 @@ local function MultiMines()
 		turtle.select(3)
 		turtle.turnRight()
 		turtle.turnRight()
-		turtle.down()
 	end
 	repeat
 		if turtle.detect() then
 			turtle.dig()
 		end
 		if turtle.forward() then
+			FillCobbleUp()
+			turtle.turnLeft()
+			FillCobble()
+			turtle.turnRight()
+			turtle.turnRight()
+			FillCobble()
+			turtle.turnLeft()
+			turtle.digDown()
+			turtle.down()
+			FillCobbleDown()
+			turtle.turnLeft()
+			FillCobble()
+			turtle.turnRight()
+			turtle.turnRight()
+			FillCobble()
+			turtle.turnLeft()
+			turtle.up()
 			MD = MD - 1
 		end
-		if turtle.detectUp() then
-			turtle.digUp()
+		if turtle.detectDown() then
+			turtle.digDown()
 		end
 	until MD == 0
 	if Way == 1 then
 		turtle.turnLeft()
+		turtle.down()
+		print("Starting strip", MineTimes)
 	else
 		turtle.turnRight()
+		turtle.down()
+		print("Starting strip", MineTimes)
 	end
 	if MineTimes == 0 then
 		print("Turtle is done")
@@ -340,6 +382,9 @@ function Start()
 		MultiMines() -- Move forward and start next mine
 		Restart() -- Start the process again for the next strip.
 	until MineTimes == 0
+	if MineTimes == 0 then
+		print("All strips complete!")
+	end
 end
 
 -- Start
