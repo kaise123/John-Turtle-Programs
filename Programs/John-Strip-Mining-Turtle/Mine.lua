@@ -1,5 +1,5 @@
 -- This Version
--- 3.10 - 03/05/2020
+-- 3.12 - 03/05/2020
 -- ChangeLogs
 -- 2.04 - Adding Left or Right Support
 -- 2.05 - Changing Lot Code For Some Stable And Cleaner Code
@@ -192,7 +192,7 @@ local function ForwardM()
 		DetectOresFront()
 		turtle.turnLeft()
 		turtle.select(3)
-		if onlight == 15 then -- Every 15 Block turtle place torch
+		if onlight == 14 then -- Every 15 Block turtle place torch
 			if torch > 0 then
 				turtle.turnLeft()
 				turtle.turnLeft()
@@ -200,7 +200,7 @@ local function ForwardM()
 				turtle.place()
 				turtle.turnLeft()
 				turtle.turnLeft()
-				onlight = onlight - 15
+				onlight = onlight - 14
 				turtle.select(3)
 			else
 				error("Ran out of torches. Quitting")
