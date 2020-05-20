@@ -23,13 +23,14 @@
 -- 3.10 - Major changes to dig up detected ores that are directly next to the turtle. Many other changes/bugfixes.
 -- 3.11 - Fix torch placement and blocking of main hall by the wall builder.
 -- 3.12 - Fix floor and wall placement - Including placement in corridor. Improve console output messages.
+-- 3.13 - Prevent turtle from running out of cobble by always retaining one in slot 4.
 
 -- Known Bugs:
 -- - If gravel is encountered on the main hallway (Between strips), the turtle may ascend for some reason and mine the next shaft one level higher.
 
 -- ToDoList:
 -- - Store total ores found over lifetime out to file
--- - Fill in walls in primary hallway also
+-- - Don't fill opposing tunnel walls
 
 --Local
 local distance = 0 -- How Far Did User Pick
@@ -104,20 +105,35 @@ end
 
 local function FillCobble()
 	turtle.select(4)
-	turtle.place()
-	turtle.select(3)
+	RemainingCobble = turtle.getItemCount(4)
+	if RemainingCobble >= 2 then
+		turtle.place()
+		turtle.select(3)
+	else
+		print("Ran out of Cobble! Can't fill hole ;)")
+	end
 end
 
 local function FillCobbleUp()
 	turtle.select(4)
-	turtle.placeUp()
-	turtle.select(3)
+	RemainingCobble = turtle.getItemCount(4)
+	if RemainingCobble >= 2 then
+		turtle.placeUp()
+		turtle.select(3)
+	else
+		print("Ran out of Cobble! Can't fill hole ;)")
+	end
 end
 
 local function FillCobbleDown()
 	turtle.select(4)
-	turtle.placeDown()
-	turtle.select(3)
+	RemainingCobble = turtle.getItemCount(4)
+	if RemainingCobble >= 2 then
+		turtle.placeDown()
+		turtle.select(3)
+	else
+		print("Ran out of Cobble! Can't fill hole ;)")
+	end
 end
 
 -- Ore Detection
