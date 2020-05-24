@@ -1,5 +1,5 @@
 -- This Version - REVERSE!
--- 3.13 - 20/05/2020
+-- 3.14 - 24/05/2020
 -- ChangeLogs
 -- 2.04 - Adding Left or Right Support
 -- 2.05 - Changing Lot Code For Some Stable And Cleaner Code
@@ -24,6 +24,7 @@
 -- 3.11 - Fix torch placement and blocking of main hall by the wall builder.
 -- 3.12 - Fix floor and wall placement - Including placement in corridor. Improve console output messages.
 -- 3.13 - Prevent turtle from running out of cobble by always retaining one in slot 4.
+-- 3.14 - Check for ores at end of strip when rotating to come back. Check for items in slots 4 and 5 (Cobblestone and Torches Chest) before starting off.
 
 -- Known Bugs:
 -- - If gravel is encountered on the main hallway (Between strips), the turtle may ascend for some reason and mine the next shaft one level higher.
@@ -111,6 +112,8 @@ local function Recheck()
 	torch = turtle.getItemCount(1)
 	chest = turtle.getItemCount(2)
 	ItemFuel = turtle.getItemCount(3)
+	SlotItemCobble = turtle.getItemCount(4)
+	SlotTorchChest = turtle.getItemCount(5)
 	Error = 0
 end
 
@@ -298,9 +301,22 @@ end
 
 --Warm Up For Back Program
 local function WarmUpForBackProgram() -- Turns the turtle around to return to beginning of shaft.
+	DetectOresDown()
 	turtle.turnLeft()
+	DetectOresFront()
+	turtle.turnRight()
+	turtle.turnRight()
+	DetectOresFront()
 	turtle.turnLeft()
 	turtle.up()
+	DetectOresFront()
+	turtle.turnLeft()
+	DetectOresFront()
+	turtle.turnRight()
+	turtle.turnRight()
+	DetectOresFront()
+	turtle.turnRight()
+	DetectOresUp()
 end
 
 --Back Program
