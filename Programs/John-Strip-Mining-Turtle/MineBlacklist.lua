@@ -1,4 +1,4 @@
--- This Version
+-- This Version - REVERSE!
 -- 3.13 - 20/05/2020
 -- ChangeLogs
 -- 2.04 - Adding Left or Right Support
@@ -49,12 +49,8 @@ local Way = 0 -- 0 = Left and 1 = Right
 local OresFoundTotal = 0 -- Pre-Define that no ores have been found yet.
 -- Define blocks that we want to dig out of the walls, floor and ceiling:
 local OreBlocks = {
-	["minecraft:coal_ore"] = true,
-	["minecraft:diamond_ore"] = true,
-	["minecraft:gold_ore"] = true,
-	["minecraft:iron_ore"] = true,
-	["minecraft:lapis_ore"] = true,
-	["thermalfoundation:ore"] = true,
+	["minecraft:stone"] = true,
+	["minecraft:dirt"] = true,
 }
 
 --Checking
@@ -156,13 +152,13 @@ end
 local function DetectOresFront()
     local IsBlock,BlockInfo = turtle.inspect()
     if IsBlock and OreBlocks[BlockInfo.name] then
+        --# There is a block on the blacklist. Do nothing
+    elseif IsBlock then
+		--# There is a block and it is not in the blacklist
 		OresFoundTotal = OresFoundTotal + 1
 		print("Found ", OresFoundTotal, "ores so far")
         turtle.select(3)
-		turtle.dig()
-		FillCobble()
-    elseif IsBlock then
-		--# there is a block and it is not in the table. We will attempt to put cobble there anyway because we want to fill lava and water.
+		turtle.digDown()
 		FillCobble()
     else
         FillCobble()
@@ -172,13 +168,13 @@ end
 local function DetectOresDown()
     local IsBlock,BlockInfo = turtle.inspectDown()
     if IsBlock and OreBlocks[BlockInfo.name] then
+        --# There is a block on the blacklist. Do nothing
+    elseif IsBlock then
+		--# There is a block and it is not in the blacklist
 		OresFoundTotal = OresFoundTotal + 1
 		print("Found ", OresFoundTotal, "ores so far")
         turtle.select(3)
 		turtle.digDown()
-		FillCobbleDown()
-    elseif IsBlock then
-		--# there is a block and it is not in the table
 		FillCobbleDown()
     else
         FillCobbleDown()
@@ -188,13 +184,13 @@ end
 local function DetectOresUp()
     local IsBlock,BlockInfo = turtle.inspectUp()
     if IsBlock and OreBlocks[BlockInfo.name] then
+        --# There is a block on the blacklist. Do nothing
+    elseif IsBlock then
+		--# There is a block and it is not in the blacklist
 		OresFoundTotal = OresFoundTotal + 1
 		print("Found ", OresFoundTotal, "ores so far")
         turtle.select(3)
-		turtle.digUp()
-		FillCobbleUp()
-    elseif IsBlock then
-		--# there is a block and it is not in the table
+		turtle.digDown()
 		FillCobbleUp()
     else
         FillCobbleUp()
