@@ -435,6 +435,14 @@ end
 
 -- Start
 print("Begin Program.")
+print("= = =")
+print("Please fill the inventory as follows:")
+print("Slot 1: ~10+ Torches")
+print("Slot 2: Output EnderChest")
+print("Slot 3: ~64 Coal")
+print("Slot 4: ~64 Cobblestone")
+print("Slot 5: Enderchest full of torches")
+print("= = =")
 print("How long should each shaft be?")
 input = io.read()
 distance = tonumber(input)
