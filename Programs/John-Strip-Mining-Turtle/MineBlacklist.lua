@@ -158,7 +158,7 @@ local function DetectOresFront()
 		OresFoundTotal = OresFoundTotal + 1
 		print("Found ", OresFoundTotal, "ores so far")
         turtle.select(3)
-		turtle.digDown()
+		turtle.dig()
 		FillCobble()
     else
         FillCobble()
@@ -190,7 +190,7 @@ local function DetectOresUp()
 		OresFoundTotal = OresFoundTotal + 1
 		print("Found ", OresFoundTotal, "ores so far")
         turtle.select(3)
-		turtle.digDown()
+		turtle.digUp()
 		FillCobbleUp()
     else
         FillCobbleUp()
