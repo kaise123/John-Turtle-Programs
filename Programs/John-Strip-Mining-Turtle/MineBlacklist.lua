@@ -50,7 +50,8 @@ local OresFoundTotal = 0 -- Pre-Define that no ores have been found yet.
 -- Define blocks that we want to dig out of the walls, floor and ceiling:
 local OreBlocks = {
 	["minecraft:stone"] = true,
-	["minecraft:dirt"] = true,
+    ["minecraft:dirt"] = true,
+    ["minecraft:cobblestone"] = true,
 }
 
 --Checking
